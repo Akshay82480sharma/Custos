@@ -27,7 +27,7 @@ def ingest_live_events():
         
     client = razorpay.Client(auth=(key_id, key_secret))
     try:
-        payments = client.payment.all()
+        payments = client.payment.all({"count": 100})
     except Exception as e:
         print(f"Failed to fetch from Razorpay: {e}")
         return

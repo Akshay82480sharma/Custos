@@ -2,6 +2,8 @@
   <h1>CUSTOS 🛡️</h1>
   <p><b>Autonomous Merchant Finance Agent</b></p>
   <p><i>Protect revenue. Recover what's lost. Find what's next.</i></p>
+  <br>
+  <a href="https://drive.google.com/file/d/1DSDzhvrmDx4eojEo8lUD6LG7iWJLILfN/view?usp=sharing"><strong>📺 Watch the 5-Minute Pitch Video</strong></a>
 </div>
 
 ---

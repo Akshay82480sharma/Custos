@@ -1,0 +1,59 @@
+{% extends 'layouts/base.html' %}
+{% block title %}CUSTOS | Growth{% endblock %}
+{% block content %}
+<header>
+  <div class="breadcrumb"><a href="/overview">Overview</a> <span>/</span> Growth</div>
+  <h1>Growth</h1>
+  <p>AI-identified upsell and expansion opportunities.</p>
+</header>
+
+<section class="metrics">
+  <article>
+    <span>Potential value</span>
+    <strong>{{ '{:,.0f}'.format(cases|sum(attribute='potential_value_inr')) }}</strong>
+  </article>
+  <article>
+    <span>Opportunities</span>
+    <strong>{{ cases|length }}</strong>
+  </article>
+  <article>
+    <span>Avg probability</span>
+    <strong>{% if cases %}{{ '{:.0f}'.format((cases|sum(attribute='probability') / cases|length) * 100) }}%{% else %}0%{% endif %}</strong>
+  </article>
+  <article>
+    <span>Top value</span>
+    <strong>{{ '{:,.0f}'.format(cases|map(attribute='potential_value_inr')|max if cases else 0) }}</strong>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="section-heading">
+    <h2>Opportunities</h2>
+    <span class="section-count">{{ cases|length }} found</span>
+  </div>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Customer</th><th>Offer</th><th>Probability</th><th>Value</th><th>Rationale</th></tr>
+    </thead>
+    <tbody>
+      {% for case in cases %}
+      <tr onclick="location.href='/demo/{{ case.id }}'">
+        <td class="row-num">{{ loop.index }}</td>
+        <td><code>{{ case.customer_ref }}</code></td>
+        <td>{{ case.best_offer.offer if case.best_offer else '—' }}</td>
+        <td>
+          <div class="probability-bar">
+            <div class="probability-fill" style="width: {{ (case.probability * 100)|int }}%"></div>
+            <span>{{ '{:.0f}'.format(case.probability * 100) }}%</span>
+          </div>
+        </td>
+        <td class="amount">{{ '{:,.0f}'.format(case.potential_value_inr) }}</td>
+        <td class="reasoning-cell">{{ case.reasoning[:60] }}{% if case.reasoning and case.reasoning|length > 60 %}...{% endif %}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="empty-state"><div class="empty-title">No opportunities</div><div class="empty-desc">Run a scan to analyze customer patterns.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

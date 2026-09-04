@@ -1,0 +1,54 @@
+{% extends 'layouts/base.html' %}
+{% block title %}CUSTOS | Recovery{% endblock %}
+{% block content %}
+<header>
+  <div class="breadcrumb"><a href="/overview">Overview</a> <span>/</span> Recovery</div>
+  <h1>Recovery</h1>
+  <p>Failed payments and recovery actions.</p>
+</header>
+
+<section class="metrics">
+  <article>
+    <span>Recovered</span>
+    <strong>{{ '{:,.0f}'.format(cases|sum(attribute='verified_recovered_amount') / 100 if cases else 0) }}</strong>
+  </article>
+  <article>
+    <span>Cases</span>
+    <strong>{{ cases|length }}</strong>
+  </article>
+  <article>
+    <span>Recovered count</span>
+    <strong>{{ cases|selectattr('recovery_state', 'equalto', 'recovered')|list|length }}</strong>
+  </article>
+  <article>
+    <span>Pending</span>
+    <strong>{{ cases|selectattr('recovery_state', 'equalto', 'pending')|list|length }}</strong>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="section-heading">
+    <h2>Recovery Ledger</h2>
+    <span class="section-count">{{ cases|length }} cases</span>
+  </div>
+  <table>
+    <thead>
+      <tr><th>#</th><th>ID</th><th>Status</th><th>State</th><th>Action</th><th>Amount</th></tr>
+    </thead>
+    <tbody>
+      {% for case in cases %}
+      <tr onclick="location.href='/demo/{{ case.id }}'">
+        <td class="row-num">{{ loop.index }}</td>
+        <td><code>{{ case.source_id or case.id[:12] }}</code></td>
+        <td><span class="status {{ case.status }}">{{ case.status }}</span></td>
+        <td><span class="recovery-badge {% if case.recovery_state == 'recovered' %}badge-success{% elif case.recovery_state == 'pending' %}badge-warning{% else %}badge-neutral{% endif %}">{{ case.recovery_state or '—' }}</span></td>
+        <td>{{ case.action_result or '—' }}</td>
+        <td class="amount">{{ '{:,.0f}'.format(case.amount_inr) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="empty-state"><div class="empty-title">No recovery cases</div><div class="empty-desc">Run a scan to identify failed payments.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

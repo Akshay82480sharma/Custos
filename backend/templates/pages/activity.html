@@ -1,0 +1,54 @@
+{% extends 'layouts/base.html' %}
+{% block title %}CUSTOS | Activity{% endblock %}
+{% block content %}
+<header>
+  <div class="breadcrumb"><a href="/overview">Overview</a> <span>/</span> Activity</div>
+  <h1>Activity</h1>
+  <p>All merchant events.</p>
+</header>
+
+<section class="metrics">
+  <article>
+    <span>Total</span>
+    <strong>{{ events|length }}</strong>
+  </article>
+  <article>
+    <span>Captured</span>
+    <strong>{{ events|selectattr('status', 'equalto', 'captured')|list|length }}</strong>
+  </article>
+  <article>
+    <span>Failed</span>
+    <strong>{{ events|selectattr('status', 'equalto', 'failed')|list|length }}</strong>
+  </article>
+  <article>
+    <span>Disputed</span>
+    <strong>{{ events|selectattr('status', 'equalto', 'disputed')|list|length }}</strong>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="section-heading">
+    <h2>All Events</h2>
+    <span class="section-count">{{ events|length }} events</span>
+  </div>
+  <table id="activity-table">
+    <thead>
+      <tr><th>#</th><th>Time</th><th>ID</th><th>Amount</th><th>Status</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      {% for event in events %}
+      <tr onclick="location.href='/demo/{{ event.id }}'">
+        <td class="row-num">{{ loop.index }}</td>
+        <td>{{ event.created_at[:19] }}</td>
+        <td><code>{{ event.id[:12] }}</code></td>
+        <td class="amount">{{ '{:,.0f}'.format(event.amount_inr) }}</td>
+        <td><span class="status {{ event.status }}">{{ event.status }}</span></td>
+        <td>{{ event.recommended_action or '—' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="empty-state"><div class="empty-title">No events</div><div class="empty-desc">Run a scan to ingest transaction data.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'layouts/base.html' %}
+{% block title %}CUSTOS | Risk{% endblock %}
+{% block content %}
+<header>
+  <div class="breadcrumb"><a href="/overview">Overview</a> <span>/</span> Risk</div>
+  <h1>Risk Assessment</h1>
+  <p>Transactions flagged by the risk engine.</p>
+</header>
+
+<section class="metrics">
+  <article>
+    <span>Total exposure</span>
+    <strong>{{ '{:,.0f}'.format(cases|sum(attribute='amount_inr')) }}</strong>
+  </article>
+  <article>
+    <span>Cases</span>
+    <strong>{{ cases|length }}</strong>
+  </article>
+  <article>
+    <span>Failed</span>
+    <strong>{{ cases|selectattr('status', 'equalto', 'failed')|list|length }}</strong>
+  </article>
+  <article>
+    <span>Resolved</span>
+    <strong>{{ cases|selectattr('status', 'equalto', 'recovered')|list|length }}</strong>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="section-heading">
+    <h2>Risk Cases</h2>
+    <span class="section-count">{{ cases|length }} records</span>
+  </div>
+  <table>
+    <thead>
+      <tr><th>#</th><th>ID</th><th>Status</th><th>Score</th><th>Verdict</th><th>Amount</th><th>Reasoning</th></tr>
+    </thead>
+    <tbody>
+      {% for case in cases %}
+      <tr onclick="location.href='/demo/{{ case.id }}'">
+        <td class="row-num">{{ loop.index }}</td>
+        <td><code>{{ case.source_id or case.id[:12] }}</code></td>
+        <td><span class="status {{ case.status }}">{{ case.status }}</span></td>
+        <td><span class="score-badge {% if case.risk_score_display and case.risk_score_display|int > 70 %}score-high{% elif case.risk_score_display and case.risk_score_display|int > 40 %}score-mid{% else %}score-low{% endif %}">{{ case.risk_score_display or '—' }}</span></td>
+        <td>{{ case.verdict or '—' }}</td>
+        <td class="amount">{{ '{:,.0f}'.format(case.amount_inr) }}</td>
+        <td class="reasoning-cell">{{ case.reasoning[:80] }}{% if case.reasoning and case.reasoning|length > 80 %}...{% endif %}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="empty-state"><div class="empty-title">No risk cases</div><div class="empty-desc">Run a scan to detect at-risk transactions.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

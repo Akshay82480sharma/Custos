@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CUSTOS | Autonomous Merchant Finance</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+    
+    :root {
+      --bg: #090A0C;
+      --panel: #101216;
+      --hover: #171A1F;
+      --text: #F4F5F7;
+      --muted: #A7ADB7;
+      --dark-muted: #626873;
+      --primary: #5668ff;
+    }
+    
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+      background-position: center top;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden; height: 100vh; display: flex; flex-direction: column;
+      line-height: 1.6;
+    }
+    
+    /* Navigation */
+    nav {
+      position: relative; /* Not fixed! Flows naturally in the flex column */
+      width: 100%;
+      flex-shrink: 0; /* Prevents it from being crushed by the hero */
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+      z-index: 100;
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      background: rgba(9, 10, 12, 0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .brand {
+      font-size: 24px; font-weight: 900; letter-spacing: 0.2em;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      margin-left: 32px; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links .btn {
+      background: var(--text); color: var(--bg);
+      padding: 10px 20px; border-radius: 4px;
+    }
+    .nav-links .btn:hover { background: var(--muted); color: var(--bg); }
+    
+    /* Hero Section */
+                .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center; /* Perfectly center the content in the available space */
+      text-align: left;
+      position: relative;
+      padding: 0 6%;
+      box-sizing: border-box;
+      min-height: 0;
+      gap: 40px;
+    }
+    
+    .hero-text {
+      width: 58%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      z-index: 2;
+    }
+    
+    
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    }
+    
+    h1 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      background: linear-gradient(180deg, #FFFFFF 0%, #A7ADB7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      margin: 0 0 16px 0;
+      max-width: 900px;
+      opacity: 0;
+      animation: fadeUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s;
+    }
+    
+    .subtitle {
+      font-size: clamp(1.2rem, 2vw, 1.5rem);
+      color: var(--muted);
+      font-weight: 400; line-height: 1.5;
+      max-width: 600px;
+      margin: 0 0 24px 0;
+      opacity: 0;
+      animation: fadeUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.4s;
+    }
+    
+    .cta-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--text);
+      padding: 16px 32px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.6s;
+    }
+    
+    .cta-btn:hover {
+      background: var(--text);
+      color: var(--bg);
+      border-color: transparent;
+      box-shadow: 0 0 40px rgba(86,104,255,0.3);
+      transform: translateY(-2px);
+    }
+    
+    /* Progressive Reveal Section */
+        .process {
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
+      height: auto;
+      padding: 40px 5% 50px 5%;
+      box-sizing: border-box;
+      background: rgba(0,0,0,0.75);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .process-title {
+      font-size: 12px;
+      color: var(--dark-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 64px;
+      text-align: center;
+    }
+    
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+    }
+    
+    
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 24px; left: 0; width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+      z-index: -1;
+    }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { left: 100%; opacity: 0; }
+    }
+
+    
+    .step {
+      text-align: center;
+      background: transparent;
+      padding: 0 16px;
+    }
+    
+    .step-icon {
+      position: relative;
+      z-index: 2;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--bg); /* Solid background to mask the line perfectly in a circle */
+      border: 1px solid var(--hover);
+      margin: 0 auto 16px auto;
+      display: flex; justify-content: center; align-items: center;
+      color: var(--muted);
+      transition: all 0.7s ease-out; /* Slow fade off */
+    }
+    
+    .step:hover .step-icon, .step.active .step-icon {
+      border-color: rgba(86, 104, 255, 0.8);
+      color: #fff;
+      background: #141829; 
+      box-shadow: 0 0 25px rgba(86,104,255,0.4), inset 0 0 10px rgba(86,104,255,0.2);
+      /* REMOVED: transform: translateY(-4px) to keep physical alignment with the laser line perfectly centered */
+      transition: all 0.1s ease-out;
+    }
+    .step:hover .step-desc, .step.active .step-desc {
+      opacity: 1;
+      color: var(--text);
+    }
+    .step:hover .step-label, .step.active .step-label {
+      color: #fff;
+    }
+    
+    .step-label {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  
+    /* --- Creative: Live Agent Feed --- */
+        .agent-feed {
+      width: 38%;
+      height: 220px;
+      max-height: 100%;
+      margin-top: 0;
+      z-index: 10;
+      background: #101216; /* Solid to block flashlight */ /* Slightly brighter so it stands out */
+      border: 1px solid rgba(255, 255, 255, 0.15); /* More visible border */
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .agent-feed::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(86,104,255,0.8), transparent);
+      z-index: 3;
+    }
+    
+    .feed-header {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--text); font-size: 9px; letter-spacing: 0.25em; font-weight: 800;
+      margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;
+      opacity: 0.8;
+    }
+    
+    .pulse-dot {
+      width: 6px; height: 6px; background: var(--primary); border-radius: 50%;
+      animation: pulseDot 2s infinite;
+    }
+    
+    @keyframes pulseDot { 
+      0% { box-shadow: 0 0 0 0 rgba(86,104,255,0.7); } 
+      70% { box-shadow: 0 0 0 6px rgba(86,104,255,0); } 
+      100% { box-shadow: 0 0 0 0 rgba(86,104,255,0); } 
+    }
+    
+    .feed-content {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    
+    .feed-line { 
+      opacity: 0; animation: typeLine 0.2s forwards; 
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .feed-line::before { content: '>'; color: var(--dark-muted); }
+    .feed-line.critical { color: #ff6b6b; text-shadow: 0 0 8px rgba(255,107,107,0.4); }
+    .feed-line.safe { color: #10b981; }
+    .feed-line.info { color: var(--primary); }
+    
+    @keyframes typeLine { to { opacity: 1; transform: translateX(0); } }
+
+  
+    .step-desc {
+      font-size: 11px;
+      color: var(--dark-muted);
+      margin-top: 12px;
+      line-height: 1.5;
+      max-width: 150px;
+      margin-left: auto;
+      margin-right: auto;
+      opacity: 0.8;
+      transition: all 0.4s ease;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+    
+    
+
+  
+    .scan-line {
+      position: absolute;
+      top: 24px; left: -10%; width: 10%; height: 1px;
+      background: var(--primary);
+      box-shadow: 0 0 15px var(--primary);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+
+    /* AGGRESSIVE COMPRESSION FOR SHORT LAPTOP SCREENS */
+    @media (max-height: 800px) {
+      nav { padding: 24px 48px; }
+      .hero { gap: 20px; }
+      .hero h1 { font-size: 2.2rem; margin-bottom: 12px; }
+      .hero .subtitle { font-size: 0.9rem; margin-bottom: 16px; }
+      .cta-btn { padding: 12px 30px; font-size: 0.8rem; }
+      .agent-feed { height: 160px; padding: 16px; }
+      .process {
+      position: relative;
+      z-index: 2; height: auto; padding: 20px 5% 30px 5%; }
+      .step-icon { width: 36px; height: 36px; margin-bottom: 8px; }
+      .steps::before, .scan-line { top: 18px; } /* Fix line alignment for smaller circles */
+      .step-desc { font-size: 0.65rem; line-height: 1.2; margin-top: 4px; }
+      .feed-header { margin-bottom: 8px; padding-bottom: 8px; }
+      .feed-content { font-size: 11px; }
+    }
+
+    /* Ambient Cursor Glow */
+    .cursor-glow {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1; /* Below text and panels */
+      background: radial-gradient(
+        350px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh),
+        rgba(140, 145, 155, 0.08) 0%,
+        transparent 50%
+      );
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      will-change: background;
+    }
+    .cursor-glow.active {
+      opacity: 1;
+    }
+  </style>
+
+</head>
+<body>
+    <div class="cursor-glow" id="cursorGlow"></div>
+  
+  <nav>
+    <a href="/" class="brand">CUSTOS</a>
+    <div class="nav-links">
+      <a href="/login" class="btn">Enter Command Center</a>
+    </div>
+  </nav>
+  
+  <section class="hero">
+    
+    <div class="hero-text">
+      <h1>Your money moves.<br>CUSTOS watches everything.</h1>
+    <p class="subtitle">The autonomous finance agent that detects risk, recovers revenue, and makes intelligent decisions—in real time.</p>
+    <a href="/login" class="cta-btn">Initialize Agent</a>
+    </div> <!-- close hero-text -->
+
+    <div class="agent-feed">
+      <div class="feed-header"><span class="pulse-dot"></span> LIVE AUTONOMOUS STREAM</div>
+      <div class="feed-content" id="feedContent"></div>
+    </div>
+
+  </section>
+  
+  <section class="process">
+    <div class="process-title">The Autonomous Lifecycle</div>
+    <div class="steps">
+      <div class="scan-line" id="scanLine"></div>
+      <div class="step">
+        <div class="step-icon">1</div>
+        <div class="step-label">Detect</div>
+        <div class="step-desc">Continuously monitors high-volume payment streams and intercepts anomalies instantly.</div>
+      </div>
+      <div class="step">
+        <div class="step-icon">2</div>
+        <div class="step-label">Understand</div>
+        <div class="step-desc">Evaluates biometric, device, and network intelligence to map the full risk profile.</div>
+      </div>
+      <div class="step">
+        <div class="step-icon">3</div>
+        <div class="step-label">Decide</div>
+        <div class="step-desc">Applies dynamic policy engines to block critical threats or route for human review.</div>
+      </div>
+      <div class="step">
+        <div class="step-icon">4</div>
+        <div class="step-label">Act</div>
+        <div class="step-desc">Executes autonomous operational workflows and retries without manual intervention.</div>
+      </div>
+      <div class="step">
+        <div class="step-icon">5</div>
+        <div class="step-label">Recover</div>
+        <div class="step-desc">Reconciles the ledger state and aggressively secures at-risk merchant revenue.</div>
+      </div>
+    </div>
+  </section>
+
+
+<script>
+  const streamLines = [
+    {t: "Intercepted incoming transaction: req_84920a", c: ""},
+    {t: "Analyzing biometric velocity... PASS", c: "safe"},
+    {t: "Cross-referencing global risk intelligence network...", c: ""},
+    {t: "WARNING: Device IP mismatch detected (Expected: IN, Actual: RU)", c: "critical"},
+    {t: "Calculating composite risk coefficient: 94.2 (CRITICAL)", c: "critical"},
+    {t: "POLICY ENFORCEMENT: Blocking transaction autonomously.", c: "info"},
+    {t: "Reconciling ledger state... zero revenue exposure.", c: "safe"},
+    {t: "Awaiting next event...", c: ""}
+  ];
+  
+  let currentIdx = 0;
+  const feed = document.getElementById('feedContent');
+  
+  function addStreamLine() {
+      if (currentIdx >= streamLines.length) { 
+          feed.innerHTML = ""; 
+          currentIdx = 0; 
+      }
+      const el = document.createElement('div');
+      el.className = 'feed-line ' + streamLines[currentIdx].c;
+      el.innerText = streamLines[currentIdx].t;
+      feed.appendChild(el);
+      
+      // Keep only last 5 lines
+      if (feed.children.length > 7) feed.firstChild.remove();
+      
+      currentIdx++;
+      
+      // Variable typing speed to feel like a real machine processing
+      let nextDelay = Math.random() * 600 + 300;
+      if (streamLines[currentIdx-1].c === 'critical') nextDelay += 800; // Pause longer on critical alerts
+      
+      setTimeout(addStreamLine, nextDelay);
+  }
+  
+  setTimeout(addStreamLine, 2000);
+</script>
+
+
+<script>
+  // Unified Interactive Lifecycle Animation (Dynamic DOM Geometry)
+  const steps = document.querySelectorAll('.step');
+  const scanLine = document.getElementById('scanLine');
+  const stepsContainer = document.querySelector('.steps');
+  
+  let t = 0;
+  const DURATION = 5000; 
+  let isPaused = false;
+  let lastTime = performance.now();
+
+  // Dynamically calculate the exact physical center of each node (as a percentage of the container)
+  // This completely eliminates Flexbox layout drift on nodes 4 and 5!
+  let iconCenters = [];
+  function calculateGeometry() {
+      const containerRect = stepsContainer.getBoundingClientRect();
+      steps.forEach((step, idx) => {
+          const icon = step.querySelector('.step-icon');
+          const iconRect = icon.getBoundingClientRect();
+          // Find center in pixels, convert to percentage relative to container width
+          const centerPx = (iconRect.left + iconRect.width / 2) - containerRect.left;
+          iconCenters[idx] = (centerPx / containerRect.width) * 100;
+      });
+  }
+  
+  // Calculate on load and re-calculate if the user resizes their window
+  calculateGeometry();
+  window.addEventListener('resize', calculateGeometry);
+
+  function animationLoop(time) {
+      let dt = time - lastTime;
+      lastTime = time;
+
+      if (!isPaused && iconCenters.length === steps.length) {
+          t += dt;
+          if (t >= DURATION) t = 0; // loop
+          
+          let progress = t / DURATION;
+          
+          // Mathematically perfect symmetrical mapping (width 10%, travel 110%)
+          let leftPos = -10 + (progress * 110); 
+          scanLine.style.left = leftPos + '%';
+          let lineCenter = leftPos + 5; // The physical center of the 10% wide line
+
+          // Buttery smooth fade-in and fade-out at the absolute edges
+          let fade = 1;
+          if (progress < 0.04) fade = progress / 0.04; 
+          else if (progress > 0.96) fade = (1 - progress) / 0.04;
+          scanLine.style.opacity = fade;
+
+          // Flawless bounding-box intersection
+          let head = leftPos + 10; // Right edge of the scanning line
+          let tail = leftPos;      // Left edge of the scanning line
+          
+          steps.forEach((step, idx) => {
+              let targetCenter = iconCenters[idx];
+              // Assume node circle is roughly 5% wide (radius 2.5%). 
+              // Node turns ON when line head touches its left edge.
+              // Node turns OFF when line tail leaves its right edge.
+              if (head >= targetCenter - 2.5 && tail <= targetCenter + 2.5) {
+                  step.classList.add('active');
+              } else {
+                  step.classList.remove('active');
+              }
+          });
+      }
+      requestAnimationFrame(animationLoop);
+
+    // Ambient Cursor Glow Tracking
+    const cursorGlow = document.getElementById('cursorGlow');
+    
+    document.addEventListener('mousemove', (e) => {
+      cursorGlow.style.setProperty('--mouse-x', e.clientX + 'px');
+      cursorGlow.style.setProperty('--mouse-y', e.clientY + 'px');
+      if (!cursorGlow.classList.contains('active')) {
+        cursorGlow.classList.add('active');
+      }
+    });
+
+    document.addEventListener('mouseleave', () => {
+      cursorGlow.classList.remove('active');
+    });
+
+  }
+
+  // Add interactive hover listeners to pause, focus, and resume
+  steps.forEach((step, idx) => {
+      step.addEventListener('mouseenter', () => {
+          isPaused = true;
+          
+          // Deactivate all, activate hovered
+          steps.forEach(s => s.classList.remove('active'));
+          step.classList.add('active');
+          
+          // Calculate exact position to instantly snap the line perfectly to the center of this node
+          let targetCenter = iconCenters[idx];
+          let targetLeftPos = targetCenter - 5; // Center the 10% line
+          
+          // Reverse-engineer the progress variable so the loop resumes perfectly
+          // leftPos = -10 + (progress * 110)  =>  progress = (leftPos + 10) / 110
+          let targetProgress = (targetLeftPos + 10) / 110; 
+          t = targetProgress * DURATION; 
+          
+          scanLine.style.transition = "left 0.2s ease-out"; // Smooth snap
+          scanLine.style.left = targetLeftPos + '%';
+          scanLine.style.opacity = 1;
+      });
+      
+      step.addEventListener('mouseleave', () => {
+          scanLine.style.transition = "none"; // Remove transition for linear loop
+          isPaused = false;
+          lastTime = performance.now(); // Reset delta timer to prevent time-jumps
+      });
+  });
+
+  requestAnimationFrame(animationLoop);
+
+    // Ambient Cursor Glow Tracking
+    const cursorGlow = document.getElementById('cursorGlow');
+    
+    document.addEventListener('mousemove', (e) => {
+      cursorGlow.style.setProperty('--mouse-x', e.clientX + 'px');
+      cursorGlow.style.setProperty('--mouse-y', e.clientY + 'px');
+      if (!cursorGlow.classList.contains('active')) {
+        cursorGlow.classList.add('active');
+      }
+    });
+
+    document.addEventListener('mouseleave', () => {
+      cursorGlow.classList.remove('active');
+    });
+
+</script>
+
+</body>
+</html>

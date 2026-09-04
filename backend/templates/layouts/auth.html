@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'light' || (!savedTheme && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+    document.documentElement.classList.add('light');
+}
+function toggleTheme() {
+    const html = document.documentElement;
+    html.classList.toggle('light');
+    localStorage.setItem('theme', html.classList.contains('light') ? 'light' : 'dark');
+}
+</script>
+<title>CUSTOS | {% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/app.css') }}">
+  <style>
+
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background-color: var(--bg); background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px); background-size: 32px 32px; }
+    .auth-container { background: rgba(16, 18, 22, 0.6); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); padding: 40px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); width: 100%; max-width: 400px; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); }
+    .auth-brand { text-align: center; margin-bottom: 32px; font-size: 28px; font-weight: 900; color: #fff; letter-spacing: 0.04em; }
+    .auth-brand small { font-size: 10px; color: #5668ff; border: 1px solid rgba(86,104,255,0.3); padding: 3px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; background: rgba(86,104,255,0.1); }
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; margin-bottom: 8px; color: #A7ADB7; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+    .input-group input { width: 100%; padding: 14px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; outline: none; font-family: inherit; transition: all 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+    .input-group input:focus { border-color: #5668ff; box-shadow: 0 0 0 2px rgba(86,104,255,0.2), inset 0 2px 4px rgba(0,0,0,0.1); }
+    .auth-btn { width: 100%; padding: 14px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05); border-radius: 8px; font-size: 13px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+    .auth-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+    .auth-switch { text-align: center; margin-top: 24px; font-size: 13px; color: #A7ADB7; }
+    .auth-switch a { color: #5668ff; text-decoration: none; font-weight: 600; cursor: pointer; transition: color 0.2s; }
+    .auth-switch a:hover { color: #8794ff; }
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+<style>
+.cursor-glow {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 0;
+    background: radial-gradient(800px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(86, 104, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 30%, transparent 70%);
+    mix-blend-mode: screen; opacity: 0; transition: opacity 0.5s ease;
+}
+.cursor-glow.active { opacity: 1; }
+.auth-container { position: relative; z-index: 2; }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cursorGlow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.setProperty('--mouse-x', e.clientX + 'px');
+            cursorGlow.style.setProperty('--mouse-y', e.clientY + 'px');
+            if (!cursorGlow.classList.contains('active')) cursorGlow.classList.add('active');
+        });
+        document.addEventListener('mouseleave', () => cursorGlow.classList.remove('active'));
+    });
+</script>
+
+  <div style="position: absolute; top: 20px; right: 20px;">
+    <button class="theme-toggle-btn" style="margin-top: 0; padding: 8px 12px;" onclick="toggleTheme()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+</div>
+{% block content %}{% endblock %}
+</body>
+</html>

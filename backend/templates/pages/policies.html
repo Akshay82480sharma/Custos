@@ -1,0 +1,83 @@
+{% extends 'layouts/base.html' %}
+{% block title %}CUSTOS | Policies{% endblock %}
+{% block content %}
+<header>
+  <div class="breadcrumb"><a href="/overview">Overview</a> <span>/</span> Policies</div>
+  <h1>Policies</h1>
+  <p>Rules governing autonomous action.</p>
+</header>
+
+<div class="policy-grid">
+  <section class="panel policy-card">
+    <h3>Retry Ceiling</h3>
+    <p>Max <strong>3</strong> automatic retries per failed payment. Beyond this, escalated for human review.</p>
+    <span class="policy-status">Active</span>
+  </section>
+  <section class="panel policy-card">
+    <h3>Amount Threshold</h3>
+    <p>Transactions above <strong>1,00,000</strong> require human approval before any action.</p>
+    <span class="policy-status">Active</span>
+  </section>
+  <section class="panel policy-card">
+    <h3>Confidence Gate</h3>
+    <p>LLM recommendations below <strong>0.6</strong> confidence are automatically deferred.</p>
+    <span class="policy-status">Active</span>
+  </section>
+  <section class="panel policy-card">
+    <h3>Escalation Window</h3>
+    <p>Graduated escalation: Reminder, Firm Reminder, Flag. Minimum <strong>48h</strong> between stages.</p>
+    <span class="policy-status">Active</span>
+  </section>
+  <section class="panel policy-card">
+    <h3>Dispute Protection</h3>
+    <p>Disputed transactions are <strong>never</strong> auto-retried. Immediately flagged for review.</p>
+    <span class="policy-status">Active</span>
+  </section>
+  <section class="panel policy-card">
+    <h3>Audit Requirement</h3>
+    <p>Every decision written to an <strong>append-only log</strong>. No action is invisible.</p>
+    <span class="policy-status">Active</span>
+  </section>
+</div>
+
+<section class="panel" style="margin-top: 16px;">
+  <div class="section-heading">
+    <h2>Enforcement Log</h2>
+  </div>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Rule</th><th>Trigger</th><th>Action</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="row-num">1</td>
+        <td>Retry Ceiling</td>
+        <td>pay_TVeXnij4 exceeded 3 retries</td>
+        <td>Escalated to human review</td>
+        <td><span class="policy-badge badge-warning">Enforced</span></td>
+      </tr>
+      <tr>
+        <td class="row-num">2</td>
+        <td>Amount Threshold</td>
+        <td>pay_TVH6MmCHUVEIkp, 79,900</td>
+        <td>Auto-executed (under ceiling)</td>
+        <td><span class="policy-badge badge-success">Passed</span></td>
+      </tr>
+      <tr>
+        <td class="row-num">3</td>
+        <td>Confidence Gate</td>
+        <td>LLM score 0.41 for growth case</td>
+        <td>Deferred to next cycle</td>
+        <td><span class="policy-badge badge-warning">Enforced</span></td>
+      </tr>
+      <tr>
+        <td class="row-num">4</td>
+        <td>Dispute Protection</td>
+        <td>pay_3e4f5a6b flagged DISPUTED</td>
+        <td>Immediate human review</td>
+        <td><span class="policy-badge badge-info">Active</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+{% endblock %}

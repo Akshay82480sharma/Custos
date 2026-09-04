@@ -1,0 +1,54 @@
+{% extends 'layouts/base.html' %}
+{% block title %}CUSTOS | Finance{% endblock %}
+{% block content %}
+<header>
+  <div class="breadcrumb"><a href="/overview">Overview</a> <span>/</span> Finance</div>
+  <h1>Finance</h1>
+  <p>Settlement mismatches and reconciliation exceptions.</p>
+</header>
+
+<section class="metrics">
+  <article>
+    <span>Exceptions</span>
+    <strong>{{ cases|length }}</strong>
+  </article>
+  <article>
+    <span>Expected total</span>
+    <strong>{{ '{:,.0f}'.format(cases|sum(attribute='expected_settlement_inr')) }}</strong>
+  </article>
+  <article>
+    <span>Fees</span>
+    <strong>{{ '{:,.0f}'.format(cases|sum(attribute='fee_inr')) }}</strong>
+  </article>
+  <article>
+    <span>Resolved</span>
+    <strong>{{ cases|selectattr('reconciliation_status', 'equalto', 'resolved')|list|length }}</strong>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="section-heading">
+    <h2>Exceptions</h2>
+    <span class="section-count">{{ cases|length }} cases</span>
+  </div>
+  <table>
+    <thead>
+      <tr><th>#</th><th>ID</th><th>Status</th><th>Reconciliation</th><th>Expected</th><th>Fee</th></tr>
+    </thead>
+    <tbody>
+      {% for case in cases %}
+      <tr onclick="location.href='/demo/{{ case.id }}'">
+        <td class="row-num">{{ loop.index }}</td>
+        <td><code>{{ case.source_id or case.id[:12] }}</code></td>
+        <td><span class="status {{ case.status }}">{{ case.status }}</span></td>
+        <td><span class="reconciliation-badge {% if case.reconciliation_status == 'resolved' %}badge-success{% elif case.reconciliation_status == 'pending' %}badge-warning{% else %}badge-neutral{% endif %}">{{ case.reconciliation_status or '—' }}</span></td>
+        <td class="amount">{{ '{:,.0f}'.format(case.expected_settlement_inr) }}</td>
+        <td class="amount">{{ '{:,.0f}'.format(case.fee_inr) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="empty-state"><div class="empty-title">No exceptions</div><div class="empty-desc">All settlements are matching.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

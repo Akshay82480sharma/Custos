@@ -1,0 +1,23 @@
+{% extends 'layouts/auth.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="auth-container">
+  <div class="auth-brand">CUSTOS <small>REGISTER</small></div>
+  <form action="/overview" method="GET">
+    <div class="input-group">
+      <label>Full Name</label>
+      <input type="text" placeholder="John Doe" required>
+    </div>
+    <div class="input-group">
+      <label>Email Address</label>
+      <input type="email" placeholder="john@company.com" required>
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" placeholder="Create a strong password" required>
+    </div>
+    <button type="submit" class="auth-btn">Create Account</button>
+  </form>
+  <div class="auth-switch">Already have an account? <a href="/login">Sign In</a></div>
+</div>
+{% endblock %}

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'light' || (!savedTheme && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+      document.documentElement.classList.add('light');
+  }
+  function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('light');
+      localStorage.setItem('theme', html.classList.contains('light') ? 'light' : 'dark');
+  }
+  </script>
+  <title>{% block title %}CUSTOS{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/app.css') }}">
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/overview">CUSTOS</a>
+    <p class="tagline">Autonomous Merchant Finance Agent</p>
+    <nav>
+      <div class="nav-header">Capabilities</div>
+      {% for id, label, href in [('overview','Overview','/overview'),('growth','Growth','/growth'),('risk','Risk','/risk'),('recovery','Recovery','/recovery'),('finance','Finance','/finance')] %}
+      <a class="{% if page == id %}active{% endif %}" href="{{ href }}">{{ label }}</a>
+      {% endfor %}
+      <div class="nav-header">Settings</div>
+      {% for id, label, href in [('command','Command Center','/command'),('activity','Activity','/activity'),('policies','Policies','/policies')] %}
+      <a class="{% if page == id %}active{% endif %}" href="{{ href }}">{{ label }}</a>
+      {% endfor %}
+    </nav>
+    <button class="theme-toggle-btn" onclick="toggleTheme()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      Toggle Theme
+    </button>
+  </aside>
+
+  <main>
+    {% include 'partials/simulation_banner.html' %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- GLOBAL COMMAND PALETTE (CMD+K) -->
+  <div id="cmd-k-overlay" class="cmd-k-overlay">
+    <div class="cmd-k-modal">
+      <div class="cmd-k-search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="cmd-k-input" placeholder="Search commands, pages, or data... (Esc to close)" autocomplete="off">
+        <div class="cmd-k-shortcut">ESC</div>
+      </div>
+      <div class="cmd-k-results">
+        <div class="cmd-k-group">NAVIGATION</div>
+        <a href="/overview" class="cmd-k-item active"><span>Overview Dashboard</span> <small>Go to home</small></a>
+        <a href="/risk" class="cmd-k-item"><span>Risk Assessment</span> <small>View risk exposures</small></a>
+        <a href="/growth" class="cmd-k-item"><span>Growth Potential</span> <small>View opportunities</small></a>
+        <a href="/recovery" class="cmd-k-item"><span>Recovery Ops</span> <small>View ledgers</small></a>
+        <div class="cmd-k-group">ACTIONS</div>
+        <a href="#" onclick="document.getElementById('run-custos-btn')?.click(); toggleCmdK(); return false;" class="cmd-k-item" style="color: #5668ff;"><span>Run Autonomous Scan</span> <small>Trigger engine</small></a>
+        <a href="/logout" class="cmd-k-item" style="color: #ff6b6b;"><span>End Session</span> <small>Logout</small></a>
+      </div>
+    </div>
+  </div>
+
+  <style>
+  .cmd-k-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      z-index: 9999; display: flex; align-items: flex-start; justify-content: center; padding-top: 15vh;
+      opacity: 0; pointer-events: none; transition: all 0.2s ease;
+  }
+  .cmd-k-overlay.open { opacity: 1; pointer-events: auto; }
+  .cmd-k-modal {
+      width: 100%; max-width: 600px; background: rgba(16, 18, 22, 0.85); backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      overflow: hidden; transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.16,1,0.3,1);
+  }
+  .cmd-k-overlay.open .cmd-k-modal { transform: scale(1); }
+  .cmd-k-search {
+      display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); gap: 12px;
+  }
+  .cmd-k-search svg { color: #A7ADB7; }
+  .cmd-k-search input {
+      flex: 1; background: transparent; border: none; color: #fff; font-size: 16px; outline: none; font-family: inherit;
+  }
+  .cmd-k-shortcut {
+      font-size: 10px; font-weight: 700; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; color: #A7ADB7;
+  }
+  .cmd-k-results { padding: 12px 0; max-height: 400px; overflow-y: auto; }
+  .cmd-k-group { font-size: 10px; font-weight: 700; color: #626873; padding: 8px 20px; letter-spacing: 0.1em; }
+  .cmd-k-item {
+      display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; color: #F4F5F7; text-decoration: none; transition: background 0.1s;
+  }
+  .cmd-k-item:hover, .cmd-k-item.active { background: rgba(255,255,255,0.04); }
+  .cmd-k-item small { color: #A7ADB7; font-size: 12px; }
+  </style>
+
+  <script>
+  function toggleCmdK() {
+      const overlay = document.getElementById('cmd-k-overlay');
+      const input = document.getElementById('cmd-k-input');
+      if (overlay.classList.contains('open')) {
+          overlay.classList.remove('open');
+          input.blur();
+      } else {
+          overlay.classList.add('open');
+          input.focus();
+      }
+  }
+
+  document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          toggleCmdK();
+      }
+      if (e.key === 'Escape' && document.getElementById('cmd-k-overlay').classList.contains('open')) {
+          toggleCmdK();
+      }
+  });
+
+  document.getElementById('cmd-k-overlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('cmd-k-overlay')) toggleCmdK();
+  });
+  </script>
+
+  <!-- LIVE AGENT DRAWER -->
+  <button class="agent-toggle-btn" onclick="toggleAgentDrawer()">
+    <span class="pulse-dot"></span> Agent Logs
+  </button>
+
+  <div id="agent-drawer" class="agent-drawer">
+    <div class="drawer-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="pulse-dot"></span>
+        <span style="font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: #fff;">AUTONOMOUS STREAM</span>
+      </div>
+      <button onclick="toggleAgentDrawer()" style="background: none; border: none; color: #A7ADB7; cursor: pointer;">&#10005;</button>
+    </div>
+    <div class="drawer-content" id="global-agent-feed"></div>
+  </div>
+
+  <style>
+  .agent-toggle-btn {
+      position: fixed; bottom: 24px; right: 24px; z-index: 900; background: rgba(16,18,22,0.8);
+      backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); padding: 10px 16px;
+      border-radius: 30px; color: #fff; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: all 0.2s;
+  }
+  .agent-toggle-btn:hover { background: rgba(255,255,255,0.05); transform: translateY(-2px); }
+  .agent-drawer {
+      position: fixed; top: 20px; bottom: 20px; right: -400px; width: 350px; background: rgba(10,12,16,0.85);
+      backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+      z-index: 999; box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column;
+      transition: right 0.3s cubic-bezier(0.16,1,0.3,1); overflow: hidden;
+  }
+  .agent-drawer.open { right: 20px; }
+  .drawer-header {
+      padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;
+  }
+  .drawer-content {
+      padding: 16px; flex: 1; overflow-y: auto; font-family: monospace; font-size: 11px; color: #A7ADB7; display: flex; flex-direction: column; gap: 8px;
+  }
+  .pulse-dot {
+      width: 8px; height: 8px; background: #5668ff; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #5668ff;
+      animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0% { opacity: 1; box-shadow: 0 0 10px #5668ff; } 50% { opacity: 0.4; box-shadow: 0 0 2px #5668ff; } 100% { opacity: 1; box-shadow: 0 0 10px #5668ff; } }
+  </style>
+
+  <script>
+  function toggleAgentDrawer() {
+      document.getElementById('agent-drawer').classList.toggle('open');
+  }
+
+  const globalLogs = [
+      "[SYSTEM] Authorized terminal connection",
+      "[ENGINE] Fetching continuous ledger state...",
+      "[RISK] Analyzing velocity pattern for mer_39x2",
+      "<span style='color:#10b981'>[PASS] Pattern cleared.</span>",
+      "[GROWTH] Evaluating credit limit expansion for mer_81k",
+      "<span style='color:#f59e0b'>[WARN] Data insufficient. Deferring to next cycle.</span>"
+  ];
+
+  let globalLogIndex = 0;
+  function appendGlobalLog() {
+      const feed = document.getElementById('global-agent-feed');
+      if (!feed) return;
+      const p = document.createElement('div');
+      p.innerHTML = '> ' + globalLogs[globalLogIndex % globalLogs.length];
+      feed.appendChild(p);
+      feed.scrollTop = feed.scrollHeight;
+      globalLogIndex++;
+      if(feed.children.length > 20) feed.removeChild(feed.firstChild);
+      setTimeout(appendGlobalLog, Math.random() * 2000 + 1000);
+  }
+  setTimeout(appendGlobalLog, 1000);
+  </script>
+
+  <!-- Toast Notifications -->
+  <div id="toast-container" class="toast-container"></div>
+  <script>
+  function showToast(message, type) {
+    type = type || 'info';
+    var container = document.getElementById('toast-container');
+    if (!container) return;
+    var toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    var icons = { success: '\u2713', error: '\u2717', info: '\u2139' };
+    toast.innerHTML = '<span class="toast-icon">' + (icons[type] || '\u2139') + '</span><span>' + message + '</span>';
+    container.appendChild(toast);
+    setTimeout(function() {
+      toast.classList.add('toast-exit');
+      setTimeout(function() { toast.remove(); }, 300);
+    }, 4000);
+  }
+  </script>
+
+</body>
+</html>

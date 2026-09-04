@@ -1,0 +1,238 @@
+{% extends 'layouts/base.html' %}
+{% block title %}CUSTOS | Overview{% endblock %}
+{% block content %}
+<header class="stagger-1">
+  <h1>Overview</h1>
+  <p>Current exposure, recovered revenue, and operational status.</p>
+</header>
+
+<section class="metrics stagger-2">
+  <article>
+    <span>Revenue at risk</span>
+    <strong>{{ '{:,.0f}'.format(metrics.revenue_at_risk) }}</strong>
+    <svg class=\"sparkline danger-line\" viewBox=\"0 0 100 20\" preserveAspectRatio=\"none\"><path d=\"M0,20 Q20,10 40,15 T100,5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg>
+  </article>
+  <article>
+    <span>Recovered</span>
+    <strong>{{ '{:,.0f}'.format(metrics.verified_recovered) }}</strong>
+    <svg class=\"sparkline success-line\" viewBox=\"0 0 100 20\" preserveAspectRatio=\"none\"><path d=\"M0,20 Q20,20 40,15 T100,2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg>
+  </article>
+  <article>
+    <span>Risk exposure</span>
+    <strong>{{ '{:,.0f}'.format(metrics.risk_exposure) }}</strong>
+    <svg class=\"sparkline warn-line\" viewBox=\"0 0 100 20\" preserveAspectRatio=\"none\"><path d=\"M0,5 Q20,15 40,10 T100,20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg>
+  </article>
+  <article>
+    <span>Growth potential</span>
+    <strong>{{ '{:,.0f}'.format(metrics.growth_potential) }}</strong>
+    <svg class=\"sparkline primary-line\" viewBox=\"0 0 100 20\" preserveAspectRatio=\"none\"><path d=\"M0,15 Q30,15 50,8 T100,0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg>
+  </article>
+  <article>
+    <span>Exceptions</span>
+    <strong>{{ metrics.finance_exceptions }}</strong>
+  </article>
+</section>
+
+<section class="run-custos-panel stagger-3">
+  <div class="run-custos-content">
+    <button id="run-custos-btn" class="run-custos-btn">Run scan</button>
+    <div id="scan-progress" class="scan-progress" style="display: none;">
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <div class="progress-info">
+        <span id="progress-stage" class="progress-stage"></span>
+        <span id="progress-text" class="progress-text"></span>
+      </div>
+    </div>
+    <div id="scan-error" class="scan-error" style="display: none;"></div>
+  </div>
+</section>
+
+<section class="panel stagger-4">
+  <div class="section-heading">
+    <h2>Activity</h2>
+    <span class="section-count">{{ events|length }} events</span>
+  </div>
+  <table id="activity-table">
+    <thead>
+      <tr>
+        <th>Reference</th>
+        <th>Status</th>
+        <th>Amount</th>
+        <th>Action</th>
+        <th>Policy</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for event in events %}
+      <tr onclick="location.href='/demo/{{ event.id }}'">
+        <td><code>{{ event.source_id }}</code></td>
+        <td><span class="status {{ event.status }}">{{ event.status }}</span></td>
+        <td class="amount">{{ '{:,.0f}'.format(event.amount_inr) }}</td>
+        <td>{{ event.recommended_action or '—' }}</td>
+        <td>{{ event.policy_decision or '—' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty-state"><div class="empty-title">No data yet</div><div class="empty-desc">Run a scan to load transaction data.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<script src="/static/js/dashboard.js"></script>
+
+<!-- TRANSACTION DEEP-DIVE PANEL -->
+<div id="tx-panel-overlay" class="tx-panel-overlay" onclick="closeTxPanel()"></div>
+<div id="tx-panel" class="tx-panel">
+  <div class="tx-panel-header">
+    <div>
+      <h3 id="tx-id">tx_placeholder</h3>
+      <span class="status captured" id="tx-status">CAPTURED</span>
+    </div>
+    <button onclick="closeTxPanel()" class="close-btn">✕</button>
+  </div>
+  
+  <div class="tx-panel-body">
+    <div class="tx-section">
+      <h4>Risk Analysis</h4>
+      <div class="risk-score">
+        <div class="score-circle" id="tx-score">24</div>
+        <div class="score-details">
+          <strong id="tx-risk-level">Low Risk</strong>
+          <p id="tx-risk-desc">Velocity and IP patterns normal.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tx-section">
+      <h4>Raw Telemetry</h4>
+      <pre id="tx-json" class="json-block">{
+  "timestamp": "2026-09-02T19:41:13Z",
+  "ip_address": "192.168.1.1",
+  "device_fingerprint": "a8f9c2...",
+  "decision_latency_ms": 42
+}</pre>
+    </div>
+    
+    <div class="tx-section">
+      <h4>Action Log</h4>
+      <ul class="action-timeline">
+        <li><span>19:41:13</span> Transaction intercepted by gateway.</li>
+        <li><span>19:41:13</span> Risk models evaluated (latency: 42ms).</li>
+        <li><span>19:41:14</span> Policy engine approved capture.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Deep Dive Panel CSS */
+.tx-panel-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6);
+    z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.tx-panel-overlay.open { opacity: 1; pointer-events: auto; }
+
+.tx-panel {
+    position: fixed; top: 0; right: -500px; width: 450px; bottom: 0;
+    background: #090A0C; border-left: 1px solid #1D2128; box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+    z-index: 1001; transition: right 0.3s cubic-bezier(0.16,1,0.3,1);
+    display: flex; flex-direction: column;
+}
+.tx-panel.open { right: 0; }
+
+.tx-panel-header {
+    padding: 24px; border-bottom: 1px solid #1D2128; display: flex; justify-content: space-between; align-items: flex-start;
+}
+.tx-panel-header h3 { margin: 0 0 8px 0; font-family: monospace; font-size: 16px; color: #F4F5F7; }
+.close-btn { background: none; border: none; color: #8A919E; cursor: pointer; font-size: 16px; padding: 4px; }
+.close-btn:hover { color: #fff; }
+
+.tx-panel-body { padding: 24px; overflow-y: auto; flex: 1; }
+.tx-section { margin-bottom: 32px; }
+.tx-section h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #8A919E; margin: 0 0 16px 0; border-bottom: 1px solid #171A21; padding-bottom: 8px; }
+
+.risk-score { display: flex; gap: 16px; align-items: center; }
+.score-circle { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #10b981; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 18px; font-weight: bold; color: #10b981; }
+.score-details strong { display: block; color: #F4F5F7; margin-bottom: 4px; }
+.score-details p { margin: 0; color: #8A919E; font-size: 12px; }
+
+.json-block { background: #0E1015; border: 1px solid #1D2128; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 11px; color: #D1D5DB; overflow-x: auto; margin: 0; }
+
+.action-timeline { list-style: none; padding: 0; margin: 0; }
+.action-timeline li { font-size: 12px; color: #A7ADB7; margin-bottom: 12px; display: flex; gap: 12px; }
+.action-timeline li span { color: #5668ff; font-family: monospace; flex-shrink: 0; }
+</style>
+
+<script>
+function openTxPanel(txId, status, amount) {
+    document.getElementById('tx-id').innerText = txId;
+    document.getElementById('tx-status').innerText = status;
+    document.getElementById('tx-status').className = 'status ' + status.toLowerCase();
+    
+    // Dynamic Risk Simulation
+    const isFailed = status.toLowerCase() === 'failed' || status.toLowerCase() === 'disputed';
+    const score = isFailed ? Math.floor(Math.random() * 40) + 60 : Math.floor(Math.random() * 30) + 10;
+    const scoreCircle = document.getElementById('tx-score');
+    scoreCircle.innerText = score;
+    
+    let riskLevel, riskDesc, riskColor;
+    if (score > 75) {
+        riskLevel = "High Risk";
+        riskDesc = "Suspicious velocity and proxy IP detected.";
+        riskColor = "var(--red, #ef4444)";
+    } else if (score > 40) {
+        riskLevel = "Medium Risk";
+        riskDesc = "Unusual pattern for this account age.";
+        riskColor = "var(--amber, #f59e0b)";
+    } else {
+        riskLevel = "Low Risk";
+        riskDesc = "Velocity and IP patterns normal.";
+        riskColor = "var(--green, #10b981)";
+    }
+    
+    document.getElementById('tx-risk-level').innerText = riskLevel;
+    document.getElementById('tx-risk-desc').innerText = riskDesc;
+    scoreCircle.style.borderColor = riskColor;
+    scoreCircle.style.color = riskColor;
+    
+    // Simulate dynamic JSON data
+    document.getElementById('tx-json').innerText = JSON.stringify({
+        transaction_id: txId,
+        amount: amount,
+        timestamp: new Date().toISOString(),
+        ip_address: "192.168." + Math.floor(Math.random()*255) + "." + Math.floor(Math.random()*255),
+        device_fingerprint: Math.random().toString(36).substring(2, 10),
+        decision_latency_ms: Math.floor(Math.random() * 50) + 10
+    }, null, 2);
+
+    document.getElementById('tx-panel-overlay').classList.add('open');
+    document.getElementById('tx-panel').classList.add('open');
+}
+
+function closeTxPanel() {
+    document.getElementById('tx-panel-overlay').classList.remove('open');
+    document.getElementById('tx-panel').classList.remove('open');
+}
+
+// Intercept table clicks to open the panel instead of redirecting
+document.addEventListener('DOMContentLoaded', () => {
+    const rows = document.querySelectorAll('#activity-table tbody tr');
+    rows.forEach(row => {
+        // Remove the onclick redirect if it exists
+        const onclickAttr = row.getAttribute('onclick');
+        if (onclickAttr) {
+            row.removeAttribute('onclick');
+            row.addEventListener('click', (e) => {
+                const txId = row.cells[0].innerText;
+                const status = row.cells[1].innerText;
+                const amount = row.cells[2].innerText;
+                openTxPanel(txId, status, amount);
+            });
+        }
+    });
+});
+</script>
+
+{% endblock %}

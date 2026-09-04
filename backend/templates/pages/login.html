@@ -1,0 +1,19 @@
+{% extends 'layouts/auth.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="auth-container">
+  <div class="auth-brand">CUSTOS <small>LOGIN</small></div>
+  <form action="/overview" method="GET">
+    <div class="input-group">
+      <label>Email Address</label>
+      <input type="email" placeholder="admin@custos.ai" required>
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" placeholder="••••••••" required>
+    </div>
+    <button type="submit" class="auth-btn">Sign In to Dashboard</button>
+  </form>
+  <div class="auth-switch">Don't have an account? <a href="/register">Register here</a></div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'layouts/base.html' %}
+{% block title %}CUSTOS | Command Center{% endblock %}
+{% block content %}
+<header>
+  <div class="breadcrumb"><a href="/overview">Overview</a> <span>/</span> Command Center</div>
+  <h1>Command Center</h1>
+  <p>Trigger scans and review priorities.</p>
+</header>
+
+<section class="run-custos-panel">
+  <div class="run-custos-content">
+    <div class="scan-hero">
+      <div class="scan-hero-icon">&gt;_</div>
+      <div class="scan-hero-text">
+        <h2>Run Pipeline</h2>
+        <p>Execute ingestion, risk, growth, recovery, and finance analysis.</p>
+      </div>
+    </div>
+    <button id="run-custos-btn" class="run-custos-btn">Run scan</button>
+    <div id="scan-progress" class="scan-progress" style="display: none;">
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <div class="progress-info">
+        <span id="progress-stage" class="progress-stage"></span>
+        <span id="progress-text" class="progress-text"></span>
+      </div>
+    </div>
+    <div id="scan-error" class="scan-error" style="display: none;"></div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-heading">
+    <h2>Priority Actions</h2>
+    <span class="section-count">{{ priorities|length }} items</span>
+  </div>
+  <div class="priority-list">
+    {% for p in priorities %}
+    <a class="priority" href="{{ p.href }}">
+      <span class="priority-num">{{ loop.index }}</span>
+      <div class="priority-body">
+        <h2>{{ p.label }}</h2>
+        <p>{% if loop.index != 3 %}{{ '{:,.0f}'.format(p.value) }} at risk{% else %}{{ p.value }} open{% endif %}</p>
+      </div>
+      <span class="priority-arrow">→</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

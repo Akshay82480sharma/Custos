@@ -73,15 +73,17 @@ def ingest_live_events():
                     "international": c.get("international", False)
                 }
                 
+            event_created_at = datetime.datetime.fromtimestamp(p["created_at"], datetime.timezone.utc).isoformat() if "created_at" in p else datetime.datetime.now(datetime.timezone.utc).isoformat()
+            
             event_id = str(uuid.uuid4())
             try:
                 db.execute(
                     "INSERT INTO events (id, source_id, type, amount, status, customer_ref, raw_payload, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    (event_id, source_id, event_type, amount, status, customer_ref, json.dumps(payload), now)
+                    (event_id, source_id, event_type, amount, status, customer_ref, json.dumps(payload), event_created_at)
                 )
                 db.execute(
                     "INSERT INTO audit_log (event_id, stage, detail, timestamp) VALUES (?, ?, ?, ?)",
-                    (event_id, "ingestion", f"Live Razorpay Sync {source_id}", now)
+                    (event_id, "ingestion", f"Live Razorpay Sync {source_id}", event_created_at)
                 )
                 print(f"Ingested live event: {source_id}")
             except sqlite3.IntegrityError:

@@ -25,7 +25,7 @@ It acts as a guardian standing between "money is at risk" and "money is lost" �
 
 - **Backend:** Python, FastAPI, SQLite
 - **AI/Logic:** Gemini for reasoning + generation (Mocked in simulation for safe demo execution)
-- **Frontend:** Jinja2 Templates, HTML5, Vanilla JavaScript, CSS (Custom styling, no heavy frameworks)
+- **Frontend (Server-Side Rendered):** Instead of a decoupled SPA, the frontend is built directly into the backend using FastAPI's SSR capabilities. It uses Jinja2 Templates, HTML5, Vanilla JavaScript, and raw CSS. This keeps the architecture incredibly lightweight and allows launching both the API and UI from a single unified server.
 - **Payments:** Designed around Razorpay webhooks
 
 ## 🏃‍♂️ How to Run Locally
